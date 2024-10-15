@@ -25,35 +25,47 @@ public_users.post("/register", (req,res) => {
 // Get the book list available in the shop
 public_users.get('/',function (req, res) {
   //Write your code here
-
-  return res.send(JSON.stringify(books));
+  let myPromise1 = new Promise((resolve,reject) => {
+    setTimeout(() => {
+      resolve(books)
+    },6000)})
+    myPromise1.then((books)=> res.send(JSON.stringify(books)))
+  
 });
 
 // Get book details based on ISBN
 public_users.get('/isbn/:isbn',function (req, res) {
   //Write your code here
-  let isbnBook=parseInt(req.params.isbn);
-  let filteredBook=books[isbnBook]
-  return res.send(filteredBook)
+  async function getFilteredBook(){
+    let isbnBook=await parseInt(req.params.isbn);
+    let filteredBook=isbnBook ? books[isbnBook]: 1
+    return res.send(filteredBook)
+  }
+  getFilteredBook()
  });
   
 // Get book details based on author
 public_users.get('/author/:author',function (req, res) {
   //Write your code here
-  let authorName=req.params.author;
-  let filteredAuthors=[]
-  for (let book in books){
-    if(books[book]["author"]===authorName){
-      filteredAuthors.push(books[book])
+  async function getBookAuthor(){
+    let authorName=await (req.params.author);
+    let filteredAuthors=[]
+    for (let book in books){
+      if(books[book]["author"]===authorName){
+        filteredAuthors.push(books[book])
+      }
     }
+    return res.send(JSON.stringify(filteredAuthors));
   }
-  return res.send(JSON.stringify(filteredAuthors));
+  getBookAuthor()
+  
 });
 
 // Get all books based on title
 public_users.get('/title/:title',function (req, res) {
   //Write your code here
-  let title=req.params.title;
+  async function getBookTitle(){
+    let title= await req.params.title;
   let filteredTitle=[]
   for (let book in books){
     if(books[book]["title"]===title){
@@ -65,6 +77,10 @@ public_users.get('/title/:title',function (req, res) {
   }else {
     return res.send("Title have not found")
   }
+  }
+  getBookTitle()
+  
+  
   
   
 });
